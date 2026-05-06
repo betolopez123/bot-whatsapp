@@ -6,9 +6,10 @@ console.log('Iniciando bot...');
 const client = new Client({
   authStrategy: new LocalAuth(),
   puppeteer: {
-    headless: true,
-    args: ['--no-sandbox', '--disable-setuid-sandbox']
-  }
+  executablePath: '/usr/bin/chromium',
+  headless: true,
+  args: ['--no-sandbox', '--disable-setuid-sandbox']
+}
 });
 const GRUPO_PERMITIDO = 'Aztecdrake🐉 Alianza';
 
