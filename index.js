@@ -4,13 +4,17 @@ const qrcode = require('qrcode-terminal');
 console.log('Iniciando bot...');
 
 const client = new Client({
-  authStrategy: new LocalAuth()
+  authStrategy: new LocalAuth(),
+  puppeteer: {
+    headless: true,
+    args: ['--no-sandbox', '--disable-setuid-sandbox']
+  }
 });
 
 const GRUPO_PERMITIDO = 'Aztecdrake🐉 Alianza';
 
 const USUARIOS_AUTORIZADOS = [
-  '59171797538@c.us',
+  '525527549796@c.us',
   
 ];
 
