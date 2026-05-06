@@ -41,12 +41,15 @@ const produccion = {
 client.on('qr', async (qr) => {
   console.log('QR recibido');
 
-  qrcode.generate(qr, { small: false });
+  console.log(qr);
+
+  qrcode.generate(qr, { small: true });
 
   await QRCode.toFile('qr.png', qr);
 
   console.log('QR guardado en qr.png');
 });
+
 client.on('authenticated', () => {
   console.log('Autenticado correctamente');
 });
