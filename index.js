@@ -1,21 +1,28 @@
 const { Client, LocalAuth } = require('whatsapp-web.js');
 const qrcode = require('qrcode-terminal');
 const QRCode = require('qrcode');
+
 console.log('Iniciando bot...');
 
 const client = new Client({
   authStrategy: new LocalAuth(),
   puppeteer: {
-  executablePath: '/usr/bin/chromium',
-  headless: true,
-  args: ['--no-sandbox', '--disable-setuid-sandbox']
-}
+    executablePath: '/usr/bin/chromium',
+    headless: true,
+    args: [
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--disable-dev-shm-usage',
+      '--disable-gpu',
+      '--no-zygote'
+    ]
+  }
 });
+
 const GRUPO_PERMITIDO = 'Aztecdrake🐉 Alianza';
 
 const USUARIOS_AUTORIZADOS = [
-  '525527549796@c.us',
-  
+  '525527549796@c.us'
 ];
 
 const niveles = {
@@ -39,8 +46,11 @@ const produccion = {
 };
 
 client.on('qr', async (qr) => {
+  console.log('QR RECIBIDO');
+  qrcode.generate(qr, { small: true });
+
   const qrImage = await QRCode.toDataURL(qr);
-  console.log('Abre este link en el navegador para ver el QR:');
+  console.log('Abre este link para ver el QR:');
   console.log(qrImage);
 });
 
@@ -62,27 +72,27 @@ client.on('ready', () => {
 
 client.on('disconnected', (reason) => {
   console.log('Bot desconectado:', reason);
+  process.exit(1);
 });
 
-client.on('message_create', async (message) => {
+client.on('message', async (message) => {
   try {
+    if (message.fromMe) return;
+
     const chat = await message.getChat();
     const texto = (message.body || '').toLowerCase().trim();
 
     const esGrupoPermitido = chat.isGroup && chat.name === GRUPO_PERMITIDO;
+
     const esPrivadoAutorizado =
-      !chat.isGroup &&
-      USUARIOS_AUTORIZADOS.includes(message.from);
+      !chat.isGroup && USUARIOS_AUTORIZADOS.includes(message.from);
 
-    const esMio = message.fromMe;
-
-    if (!esGrupoPermitido && !esPrivadoAutorizado && !esMio) {
+    if (!esGrupoPermitido && !esPrivadoAutorizado) {
       return;
     }
 
     console.log('Mensaje permitido:', {
       from: message.from,
-      fromMe: message.fromMe,
       body: message.body,
       grupo: chat.isGroup ? chat.name : 'privado'
     });
@@ -140,7 +150,7 @@ client.on('message_create', async (message) => {
     }
 
     if (texto.startsWith('!granja')) {
-      const datos = texto.replace('!granja ', '');
+      const datos = texto.replace('!granja', '').trim();
       const partes = datos.split('|');
 
       const cantidad = parseInt(partes[0]);
@@ -170,8 +180,16 @@ client.on('message_create', async (message) => {
     }
 
   } catch (error) {
-    console.error('Error en mensaje:', error);
+    console.error('ERROR EN MENSAJE:', error);
   }
+});
+
+process.on('unhandledRejection', (error) => {
+  console.log('UNHANDLED REJECTION:', error);
+});
+
+process.on('uncaughtException', (error) => {
+  console.log('UNCAUGHT EXCEPTION:', error);
 });
 
 client.initialize();
