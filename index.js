@@ -22,7 +22,8 @@ const client = new Client({
 const GRUPO_PERMITIDO = 'Aztecdrake🐉 Alianza';
 
 const USUARIOS_AUTORIZADOS = [
-  '525527549796@c.us'
+  '5215527549796@c.us',
+  '59171454425@c.us'
 ];
 
 const niveles = {
